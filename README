@@ -1,0 +1,74 @@
+1.Background of Project01:
+
+In this project, we are looking at the New York City Fire Incident Dispatch Data from the NYC Open data. We want to gain some beneficial insights from the data through the use of data analysis.  
+We will use Amazon Web Services (AWS) to upload the data from the NYC open data website onto Elasticsearch and then develop visuals through Kibana. 
+The aim of this project is to help NYC citizens, New York Fire Department and New York Police Department to understand the fire incidents in NYC and generate viable solutions. 
+
+-------------------------
+
+2.	How to build and run docker image
+
+First we go to the Dockerfile in File Browser to add a set of instructions to create a Docker image.
+Instructions
+
+#We start with the base image of python:3.9
+FROM python:3.9 
+
+#Now we copy the main.py which lives in pythonContainer into the image we are going to create
+COPY main.py .  
+
+#Now we change our directory
+WORKDIR /app
+
+#Now we copy everything into /app
+COPY . /app
+
+#Next, we install the dependencies. Passes in a text file which we created in the same project01 folder
+RUN pip install -r requirements.txt
+
+# This will run when we run our docker container
+ENTRYPOINT ["python", "src/main.py"]
+
+# Next, we build a docker image using the docker build command in the terminal 
+docker build -t bigdataproject1:1.0 .
+
+(docker build : creates container images
+-t : indicates the tag
+bigdataproject1 : name
+1.0	: the version of the image that you are creating
+. : shorthand for the current directory)
+ 
+
+#Finally we can run the container with the command in the terminal
+docker run bigdataproject1:1.0
+
+#docker run bigdataproject1:1.0 : initializes an image where Python is available. 
+
+## This is the code i ran to upload the bulk NYC fire incident data to elasticsearch
+docker run -e INDEX_NAME='fire' -e DATASET_ID='8m42-w767' -e APP_TOKEN='qYDKNaklkMtFp8UDLPLdr75OP' -e ES_HOST='https://search-project1-ziam7hmhavxgamnpz7t7xxisqu.us-east-2.es.amazonaws.com/'-e ES_USERNAME='tewang' -e ES_PASSWORD='Tewang12!' bigdataproject1:1.0 –page_size=1000 –numpages=500
+
+-----------------------
+
+3.	List visuals and why
+
+1. Fire Incidents/borough:
+Which borough has the most fire incidents?
+Ans: Brooklyn has the most fire incidents with 71,325 incidents
+Solution: NYFD should allocate more resources to the Brooklyn borough area for proactive initiations.
+
+2. Most common Fire Incidents:
+Which type of incidents occur the most?
+Ans: Medical – Assist Civilian are the most common type of incidents with 53,697
+Solution: NYPD and NYFD should focus on training personnel with the most common type of fire incidents first as a priority
+
+3. Average Response Time:
+Which borough has the highest and lowest average response time?
+Ans: Bronx has the highest avg response time with 297.743 seconds and Brooklyn has the lowest avg response time with 252.042 seconds
+Solution: NYFD AND NYPD should allocate resources to the Bronx area to reduce their average response seconds which could help save lives. 
+
+4. Incidents per year:
+How many fire incidents had a response seconds of 0?
+Ans: We can see about 30,000 incidents where the response seconds was 0. 
+Solution: the NYFD will have to go deeper and see what attributes led to quick response times and adopt them to increase the number of incidents with fewer ersponse seconds.    
+
+---------------------
